@@ -21,11 +21,11 @@ A hypermedia document (loaded from a server) with a control might look like this
 
 ```json
 var hal = {
-	"_links" : { // HAL defines hyperlinks via rel
+	"_links" : {
 		"self" : {
 			"href" : "/link-to-me"
 		},
-		"controls:add-resource" : { // Hyperbone includes internal rels to controls
+		"controls:add-resource" : {
 			"href" : "#_controls/edit/add-a-resource"
 		}
 	},
@@ -36,20 +36,20 @@ var hal = {
 			"add-a-resource" : { 
 				"method" : "POST",
 				"action" : "/link-to-me/add-resource",
-				_children : [
+				"_children" : [
 					{
-						input : {
-							type : "text",
-							name : "username",
-							placeholder : "Enter your name",
-							_label : "Your name:",
-							_value : ""
+						"input" : {
+							"type" : "text",
+							"name" : "username",
+							"placeholder" : "Enter your name",
+							"_label" : "Your name:",
+							"_value" : ""
 						}
 					},
 					{
-						input : {
-							type : "submit",
-							value : "Add yourself"
+						"input" : {
+							"type" : "submit",
+							"value" : "Add yourself"
 						}
 					}
 				]
