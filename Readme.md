@@ -102,7 +102,18 @@ Create a new instead of HyperboneForm with a full hypermedia document. (see [Hyp
 var formGenerator = new HyperboneForm( myHypermediaDocument );
 ```
 
-###.create( rel )
+### .on( event, callback)
+### .trigger( event, [ ... ] )
+
+HyperboneForm has Backbone events built in. There are three events being emitted:
+
+- `submitted` Fires when the user clicks an `input[type="submit"]` or `button[type="submit"]`. The callback is passes the form element and the control model.
+
+- `updated` Fires when any form field changes, whether because of the user or because of an underlying model change. The callback is passes the form element and the control model and the name of the input that has changed
+
+- `initialised` Fires when the basic HTML has been generated. The callback is passes the form element and the control model.
+
+### .create( rel )
 
 Pass the rel of a control to create an initial base form.
 
