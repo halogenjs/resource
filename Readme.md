@@ -5,111 +5,84 @@
 
 ## tldr; 
 
-Generate JSON representations of forms on your server. Add to JSON hypermedia document as hypermedia controls.
-
-Client loads the Hypermedia JSON. Automatically turns the controls into styleable HTML forms with two-way binding. Never touch form HTML ever again.
-
+Generates easy to style two-way bound and evented HTML forms from a custom JSON schema. 
 
 ## Intro
 
-Working with [Hyperbone Model](http://github.com/green-mesa/hyperbone-model), this module is for turning JSON hypermedia controls into fully two-way bound, styleable HTML.
+[Hyperbone Model](http://github.com/green-mesa/hyperbone-model) adds to the HAL spec with a `_controls` keyword. These are JSON representations of forms for interacting with the resource.
 
-A "JSON Hypermedia Control" is a semantic JSON representation of an HTML form, in that it specifies the names, values and types of specific controls but does not expect to be used with any particular layout style.
+HyperboneForm does not care about network interactions or serialisation. All it cares about is generating good HTML and then keeping that HTML synchronised with the underlying model. 
 
-For a control to be rendered into HTML, there are three requirements:
+The idea is that if your server side can automatically generate the JSON for controls (from your data model), you can then automatically generate forms in the client and you don't have to faff around with HTML and binding inputs individually. All you need to worry about is where they go, and that stuff is taken care of in [Hyperbone View](http://github.com/green-mesa/hyperbone-view) (Note: Not actually taken care of by Hyperbone View yet)
 
-- The JSON representation of the form must be inside a Hyperbone model. A standard backbone model or naked javascript object will not work.
-- There must be a 'method' attribute at the top level and probably at least one form field defined.
-- The JSON representation must match the spec detailed here.
+## How Hyperbone Model and Hyperbone Form work together
 
-The typical/expected use case is to transform controls that exist in full Hypermedia Documents using the `.control()` method on Hyperbone Models.
+A hypermedia document (loaded from a server) with a control might look like this:
 
-```js
-var converter = new HyperboneForm( myHypermediaDoc.control("controls:mycontrol") );
-
-dom('body').append( converter.toHTML() );
-
-// body now has an HTML representation of the form. 
-// changes to the form are applied to the model. 
-// changes to the model are applied to the form.
-```
-It can also be used without a complete hypermedia document by passing your JSON representation into a Hyperbone model first.
-
-```js
-var control = new HyperboneModel({
-	method : "POST",
-	action : "/login",
-	encoding : "application/x-form-www-urlencoding",
-	_children : [
-		{
-			fieldset : {
+```json
+var hal = {
+	"_links" : { // HAL defines hyperlinks via rel
+		"self" : {
+			"href" : "/link-to-me"
+		},
+		"controls:add-resource" : { // Hyperbone includes internal rels to controls
+			"href" : "#_controls/edit/add-a-resource"
+		}
+	},
+	"Title" : "This is the title",
+	"Description" : "I am a description of a thing",
+	"_controls" : {
+		"edit" : {
+			"add-a-resource" : { 
+				"method" : "POST",
+				"action" : "/link-to-me/add-resource",
 				_children : [
 					{
-						legend : {
-							_text : "Login"
+						input : {
+							type : "text",
+							name : "username",
+							placeholder : "Enter your name",
+							_label : "Your name:",
+							_value : ""
 						}
 					},
 					{
 						input : {
-							type : "email",
-							name : "email",
-							placeholder : "example@example.com",
-							_label : "Email",
-							_value : ""
-					},
-					{
-						input : {
-							type : "password",
-							name : "password",
-							placeholder : "Password",
-							_label : "Password",
-							_value : ""
-					},
-					{
-						input : {
-							type : "checkbox",
-							_label : "Remember me",
-							name : "rememberme"
-						}
-					},
-					{
-						button : {
 							type : "submit",
-							_text : "Submit"
+							value : "Add yourself"
 						}
-					}	
+					}
 				]
 			}
 		}
-	]
-});
+	}
 
-var converter = new HyperboneForm( control );
+}
 
-dom('body').append( converter.toHTML() );
 ```
-which generates a default HTML transformation which adds a simple line break after each control group along with labels etc:
-```html
-<body>
-	<form method="POST" action="/login" encoding="application/x-form-www-urlencoded">
-		<fieldset>
-			<legend>Login</legend>
-			<label>Email</label>
-			<input type="email" name="email" placeholder="example@example.com">
-			<br>
-			<label>Password</label>
-			<input type="password" name="password" placeholder="Password">
-			<br>
-			<label></label>
-			<label>
-				<input type="checkbox" name="rememberme"> Remember me
-			</label>
-			<br>			
-			<label></label>
-			<button type="submit">Submit</button>
-		</fieldset>
-	</form>
-</body>
+And the concept is that you can parse this `hal` with HyperboneModel...
+```js
+var model = new HyperboneModel( hal );
+````
+And you can access the `add-a-resource` control from the model via its rel:
+```js
+var control = model.control('controls:add-resource')
+```
+...And HyperboneForm understands the way the HyperboneModel works with controls, so all you really need to do is:
+```js
+var form = new HyperboneForm( model )
+			.create('controls:add-resource')
+			.toHTML();
+// form is now a DOM fragment that can be appended into your page and used as normal. 
+```
+You can also subscribe to an event to find out when the user has submitted the form to deal with network/serialisation stuff.
+```js
+var form = new HyperboneForm( model )
+            .on('submitted', function(el, control){
+            	// probably want to serialise the control and so some AJAX here..
+            })
+			.create('controls:add-resource')
+			.toHTML();
 ```
 
 ## Installation
@@ -119,13 +92,58 @@ which generates a default HTML transformation which adds a simple line break aft
     $ component install green-mesa/hyperbone-model
 
 
+## API
+
+### new HyperboneForm( hypermediaDocument )
+
+Create a new instead of HyperboneForm with a full hypermedia document. (see [HyperboneModel](https://github.com/green-mesa/hyperbone-model))
+
+```js
+var formGenerator = new HyperboneForm( myHypermediaDocument );
+```
+
+###.create( rel )
+
+Pass the rel of a control to create an initial base form.
+
+```js
+var formGenerator = new HyperboneForm( myHypermediaDocument );
+formGenerator.create('controls:my-control');
+```
+
+### .toHTML()
+
+After creating the base version of the form, project onto some sort of more easily styleable layout:
+
+```js
+var formGenerator = new HyperboneForm( myHypermediaDocument );
+formGenerator.create('controls:my-control');
+
+var html = formGenerator.toHTML();
+```
+
+
+### .toBackbone2HTML()
+
+After creating the base version of the form, project onto a Backbone 2 Horizontal Form layout:
+
+```js
+var formGenerator = new HyperboneForm( myHypermediaDocument );
+formGenerator.create('controls:my-control');
+
+var html = formGenerator.toBackbone2HTML();
+```
+
+
 ## JSON Control Spec
 
-_This spec is subject to revision_. The primary design goal is that this should be a semantic representation of a form. To this end there are some reserved attributes that attempt to normalise the differences between different kind of form elements, as well as add the all important semantic data.
+The primary design goal is that this should be a semantic representation of a form. To this end there are some reserved attributes that attempt to normalise the differences between different kind of form elements, as well as add the all important semantic data.
 
 In keeping with the HAL Spec, reserved attributes begin with an underscore.
 
-They are:
+__NOTE:__ `_labels` are optional. They're more likely to be a template concern and not something provided by a server but they're included here for completeness' sake. 
+
+Reserved attributes are:
 
 - `_children` : An array holding child nodes, i.e, select options, fieldset children etc.
 - `_label` : Labels an input (and/or a group of checkboxes/radiobuttons), independently of how it will ultimately be used
@@ -312,7 +330,7 @@ Generates this...
 <textarea name="big-intput">This is my content</textarea>
 ```
 
-### Defining labels
+### Defining labels (optional)
 
 Because we want to preserve the semantic labels, the `_label` reserved attribute lets the JSON define an element's label independently of the HTML layout to be used.
 
@@ -390,25 +408,6 @@ Note that it is assumed that the `_children` of `_checkboxes` and `_radios` are 
 </label>
 <br>
 ```
-
-## API
-
-### new HyperboneForm( control )
-
-Create a new converter from a control. 
-
-```js
-var HyperboneForm = require('hyperbone-form').Hyperbone;
-var control = new HyperboneForm( aHyperboneModel.control('controls:some-control') );
-```
-
-### .toHTML()
-
-Project the control onto the default basic line break based layout
-
-### .toBackbone2HTML()
-
-Project the control onto the Backbone 2 Horizontal Form based layout. Lots and lots of divs and classes.
 
 
 ## Testing

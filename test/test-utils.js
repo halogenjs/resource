@@ -5506,6 +5506,14 @@ window.setValueAndTrigger = function( el , value, event, options){
 	trigger(el.els[0], event, options);
 
 }
+window.simulateClick = function(el, options){
+
+  options || (options = { cancelable : true});
+
+  trigger(el.els[0], 'click', options);
+
+}
+
 });
 
 

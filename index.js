@@ -1,20 +1,17 @@
 var _ = require('underscore');
+var Events = require('backbone-events').Events;
 var dom = require('dom');
 
-var HyperboneForm = function( control ){
+var HyperboneForm = function( model ){
 
-  this.control = control;
+  this.model = model;
 
   this.modelRefs = {};
   this.partialRefs = {};
 
   this.fields = [];
 
-  if(control){
-
-    this.html = dom( document.createDocumentFragment() ).append(this.traverse( this.control, 'form' ));    
-
-  }
+  _.extend(this, Events);
 
 	return this;
 
@@ -23,6 +20,28 @@ var HyperboneForm = function( control ){
 var validElements = ["fieldset", "legend", "input", "textarea", "select", "optgroup", "option", "button", "datalist", "output"];
 
 HyperboneForm.prototype = {
+
+  create : function( control ){
+
+    this.control = this.model.control(control);
+
+    if(!control) throw Error("No such control");
+
+    this.el = dom( document.createDocumentFragment() ).append(this.traverse( this.control, 'form' ));    
+
+    if(!this.el.find('input[type="submit"]').length() && !this.el.find('button[type="submit"]').length() ){
+
+      this.control.set('__hyperbone_submit', { input : {type : 'submit', name : 'submit', value : 'Submit'}});
+
+      this.el.append( this.traverse( this.control.get('__hyperbone_submit')));
+
+    }
+
+    this.trigger('initialised', this.el, this.control );
+
+    return this;
+
+  },
 
   toHTML : function(){
 
@@ -79,13 +98,13 @@ HyperboneForm.prototype = {
 
     }, this);
 
-    return this.html;
+    return this.el;
 
   },
 
   toBootstrap2HTML : function( inline ){
 
-    this.html.addClass('form-horizontal');
+    this.el.addClass('form-horizontal');
 
     _.each(this.fields, function( formField ){
 
@@ -177,7 +196,7 @@ HyperboneForm.prototype = {
 
     }, this);
 
-    return this.html;
+    return this.el;
 
   },
 
@@ -250,7 +269,10 @@ HyperboneForm.prototype = {
 
           if(oldVal !== val){
             frag.val(val);
+            self.trigger('updated', self.el, self.control, 'change:' + node.get('name'));
           }
+
+
 
         });
 
@@ -260,6 +282,7 @@ HyperboneForm.prototype = {
 
           if(oldVal !== frag.val()){
             node.set("_value", frag.val());
+            self.trigger('updated', self.el, self.control, 'change:' + node.get('name'));
           }
 
         });
@@ -278,6 +301,16 @@ HyperboneForm.prototype = {
 
 
 		}, this);
+
+    if ((tag==="input" || tag==="button") && node.get('type') === "submit"){
+
+      frag.on('click', function(e){
+
+        e.preventDefault();
+        self.trigger('submitted', self.el, self.control);
+
+      })
+    }
 
 		return frag;
 

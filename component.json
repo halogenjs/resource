@@ -5,12 +5,14 @@
   "version": "0.0.1",
   "keywords": [],
   "dependencies": {
-    "components/underscore" : "1.4.4",
-    "green-mesa/dom" : "0.10.0"
+    "components/underscore": "1.4.4",
+    "green-mesa/dom": "0.10.0",
+    "green-mesa/backbone-events": "*"
   },
   "development": {},
   "license": "MIT",
   "scripts": [
     "index.js"
-  ]
+  ],
+  "remotes": []
 }

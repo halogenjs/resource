@@ -1,8 +1,6 @@
 
 describe("suite", function(){
 
-
-
 	describe("Environment", function(){
 
 		it("Environment", function(){
@@ -263,6 +261,7 @@ describe("suite", function(){
 			expect( html.at(1).val() ).to.equal( false );
 		});
 
+
 		it("Can generate a array of radio buttons with a single label using 'radios'", function(){
 
 			var gen = new HyperboneForm();
@@ -336,6 +335,40 @@ describe("suite", function(){
 
 		});
 
+		it("Automatically adds a submit button if none is found", function(){
+
+			var m = new Model({
+				_links : {
+					"controls:test" : {
+						href : '#_controls/test'
+					}
+				},
+				_controls : {
+					test : {
+						method : "POST",
+						action : "/do-action",
+						encoding: "x-form-www-url-encoding",
+						_children : [
+							{
+								input : {
+									type : "text",
+									name : "name",
+									value : ""
+								}
+							}
+						]
+					}
+				}
+
+			});
+
+			var gen = new HyperboneForm( m ).create('controls:test');
+
+			expect( gen.el.find('input[type="submit"]').length() ).to.equal(1);
+
+
+		});
+
 	});
 
 	describe("Using controls", function(){
@@ -346,9 +379,9 @@ describe("suite", function(){
 
 			var m = new Model( useFixture('/everything'))
 
-			var control = new HyperboneForm( m.control("controls:test") );
+			var gen = new HyperboneForm( m );
 
-			var html = control.html;
+			var html = gen.create('controls:test').el
 
 			expect( html.attr('action') ).to.equal('/tasklist/create');
 			expect( html.attr('method') ).to.equal('POST');
@@ -373,7 +406,7 @@ describe("suite", function(){
 		it("can transform form to standard tableless layout with line breaks and labels", function(){
 
 			var m = new Model( useFixture('/everything') );
-			var gen = new HyperboneForm( m.control("controls:test") );
+			var gen = new HyperboneForm( m ).create( 'controls:test' );
 
 			var html = gen.toHTML();
 
@@ -400,7 +433,7 @@ describe("suite", function(){
 		it("can transform form to Bootstrap 2 Horizontal Form", function(){
 
 			var m = new Model( useFixture('/everything') );
-			var gen = new HyperboneForm( m.control("controls:test") );
+			var gen = new HyperboneForm( m ).create('controls:test');
 
 			var html = gen.toBootstrap2HTML();
 
@@ -664,6 +697,94 @@ describe("suite", function(){
 			
 		});
 
+
+	});
+
+	describe("Event emitting", function(){
+
+		var HyperboneForm = require('hyperbone-form').HyperboneForm;
+
+		it("emits an initalised event", function( done ){
+
+			var m = new Model( useFixture('/everything'))
+
+			new HyperboneForm( m )
+				.on('initialised', function(el, control){
+
+					// check we're getting the correct params
+					expect(el.els.length).to.equal(1);
+					expect(control.get('method')).to.equal('POST');
+
+					done();
+
+				})
+				.create('controls:test');
+
+		});
+
+		it("emits an submitted event", function( done ){
+
+			var m = new Model( useFixture('/everything'))
+
+			var el = new HyperboneForm( m )
+				.on('submitted', function(el, control){
+
+					// check we're getting the correct params
+					expect(el.els.length).to.equal(1);
+					expect(control.get('method')).to.equal('POST');
+
+					done();
+
+				})
+				.create('controls:test').el
+
+			simulateClick(el.find('button[type="submit"]'));
+
+		});
+
+		it("emits an updated event when form field changes", function( done ){
+
+			var m = new Model( useFixture('/everything'))
+
+			var el = new HyperboneForm( m )
+				.on('updated', function(el, control, event){
+
+					// check we're getting the correct params
+					expect(el.els.length).to.equal(1);
+					expect(control.get('method')).to.equal('POST');
+					expect(event).to.equal('change:text-input')
+
+					done();
+
+				})
+				.create('controls:test').el
+
+			setValueAndTrigger( el.find('input[name="text-input"]'), "don't care", "change");
+
+		});
+
+
+		it("emits an updated event when model changes as well", function( done ){
+
+			var m = new Model( useFixture('/everything'))
+
+			var gen = new HyperboneForm( m )
+				.on('updated', function(el, control, event){
+
+					// check we're getting the correct params
+					expect(el.els.length).to.equal(1);
+					expect(control.get('method')).to.equal('POST');
+					expect(event).to.equal('change:text-input')
+
+					done();
+
+				})
+				.create('controls:test');
+
+			m.control('controls:test').get('_children[0].fieldset._children[1].input').set('_value', "don't care");
+
+
+		});
 
 	});
 
