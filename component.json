@@ -1,13 +1,13 @@
 {
-  "name": "hyperbone-form",
-  "repo": "green-mesa/hyperbone-form",
-  "description": "Generates two way bound HTML forms from Hyperbone model controls",
+  "name": "hyperbone-io",
+  "repo": "green-mesa/hyperbone-io",
+  "description": "HTTP Interactions for Hyperbone Models",
   "version": "0.0.1",
   "keywords": [],
   "dependencies": {
-    "components/underscore": "1.4.4",
-    "green-mesa/dom": "0.10.0",
-    "green-mesa/backbone-events": "*"
+    "green-mesa/hyperbone-model": "*",
+    "green-mesa/backbone-events": "*",
+    "visionmedia/superagent" : "*"
   },
   "development": {},
   "license": "MIT",

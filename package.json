@@ -1,14 +1,14 @@
 {
-  "name": "hyperbone-form",
+  "name": "hyperbone-io",
   "version": "0.0.1",
-  "description": "Generates two way bound HTML forms from Hyperbone model controls",
+  "description": "HTTP interactions for Hyperbone Models",
   "main": "index.js",
   "scripts": {
     "test": "grunt install-build-test"
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/green-mesa/hyperbone-form"
+    "url": "http://github.com/green-mesa/hyperbone-io"
   },
   "keywords": [
     "grunt"
@@ -22,7 +22,8 @@
     "grunt-contrib-watch": "~0.5.3",
     "component": "~0.17.4",
     "chai": "~1.8.0",
-    "mocha": "~1.13.0"
+    "mocha": "~1.13.0",
+    "restify": "~2.6.0"
   },
   "author": "template",
   "license": "MIT",
