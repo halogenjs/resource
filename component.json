@@ -1,6 +1,6 @@
 {
-  "name": "hyperbone-io",
-  "repo": "green-mesa/hyperbone-io",
+  "name": "hyperbone-model-with-io",
+  "repo": "green-mesa/hyperbone-model-with-io",
   "description": "HTTP Interactions for Hyperbone Models",
   "version": "0.0.1",
   "keywords": [],

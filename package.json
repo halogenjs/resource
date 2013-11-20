@@ -1,5 +1,5 @@
 {
-  "name": "hyperbone-io",
+  "name": "hyperbone-model-with-io",
   "version": "0.0.1",
   "description": "HTTP interactions for Hyperbone Models",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/green-mesa/hyperbone-io"
+    "url": "http://github.com/green-mesa/hyperbone-model-with-io"
   },
   "keywords": [
     "grunt"

@@ -1,40 +1,76 @@
-# Hyperbone IO
+# Hyperbone Model (With IO)
 
-[![Build Status](https://travis-ci.org/green-mesa/hyperbone-io.png?branch=master)](https://travis-ci.org/green-mesa/hyperbone-io)
+[![Build Status](https://travis-ci.org/green-mesa/hyperbone-model-with-io.png?branch=master)](https://travis-ci.org/green-mesa/hyperbone-model-with-io)
 
 
 ## tldr; 
 
-Loads and reloads Hypermedia into Hyperbone Models, interacts with the API via commands. 
+Adds HTTP interactions to Hyperbone Models. Ridiculously early push this.
 
 ## Intro
 
-Insert crap here.
+Adds a 'fetch' method for loading a Hypermedia resource from a server, and a 'execute' method for sending Command data to a server. 
 
 ## Installation
 
   Install with [component(1)](http://component.io):
 
-    $ component install green-mesa/hyperbone-model
+    $ component install green-mesa/hyperbone-model-with-io
 
+
+## Usage
+
+Instead of ...
+
+```js
+var Model = require('hyperbone-model').Model;
+```
+
+do...
+
+```js
+var Model = require('hyperbone-model-with-io').Model;
+```
 
 ## API
 
-Insert crap here.
+### .fetch()
+
+Assuming your model has a self href, it will load the hypermedia and fire a `sync` event, as per normal Backbone. Parameters in the callback
+are the model and the request response.
+
+### .execute( "command name" )
+
+If you're using the '_commands' functionality, calling `.execute` will seralise the command's properties and PUT/POST/DELETE etc to the specified HREF. 
+
+HTTP error codes 201, 200 and 202 are considered successful. ANything else counts as an error. 
+On success, a .fetch() automatically happens. If it's an error this doesn't happen. 
+
+It will also trigger `executed` or `execution-failed` which is passed the command that failed. This should bubble up to the parent model.
+
+### .execute( "command name", callback )
+
+If you pass a callback, instead of an automatic .fetch() happening your callback is called so you can manually decide whether or not to resync.
+
+The parameters passed to the callback are `err` and `response`. 201, 200 and 202 are considered successful. ANything else counts as an error.
+
+It will also trigger `executed` or `execution-failed`, which is passed the command that failed.
+
+And this gives you Hyperbone Models with the HTTP extensions. This module is badly named really. This should bubble up to the parent model.
 
 ## Testing
 
-Install testing tools. You probably need PhantomJS on your path.
+Running the tests manually:
 
-```back
-  $ npm install && npm install -g grunt-cli
+```js
+node server.js
 ```
 
-Run the tests:
+Then navigate to [localhost:3010/testrunner.html](http://localhost:3010/testrunner.html)
 
-```bash
-  $ grunt test
-```
+Using Grunt:
+
+Have not quite set up the Gruntfile to do this yet.
 
 ## License
 

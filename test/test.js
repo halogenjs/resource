@@ -16,8 +16,8 @@ describe("suite", function(){
 
 			should.exist(dom);
 			should.exist(Model);
-			should.exist(require('hyperbone-io'));
-			should.exist(require('hyperbone-io').Model);
+			should.exist(require('hyperbone-model-with-io'));
+			should.exist(require('hyperbone-model-with-io').Model);
 
 		});
 
@@ -25,7 +25,7 @@ describe("suite", function(){
 
 	describe("Loading Hypermedia", function(){
 
-		var Model = require('hyperbone-io').Model;
+		var Model = require('hyperbone-model-with-io').Model;
 
 		it("Can load a hypermedia object from a remote service", function( done ){
 
@@ -128,7 +128,7 @@ describe("suite", function(){
 
 	describe("executing commands", function(){
 
-		var Model = require('hyperbone-io').Model;
+		var Model = require('hyperbone-model-with-io').Model;
 
 		it("Can execute a POST command with form encoding with a callback", function( done ){
 
@@ -210,7 +210,6 @@ describe("suite", function(){
 			model.fetch();
 
 		});
-
 
 		it("Can execute a command with JSON encoding and automatically resync", function( done ){
 

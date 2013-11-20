@@ -54,8 +54,10 @@ module.exports.Model = require('hyperbone-model').Model.extend({
     if (_.isFunction(callback)){
       fn = function(res){
         if(res.status == 200 || res.status == 201 || res.status == 202){
+          self.trigger('executed', cmd);
           callback(false, res);
         }else{
+          self.trigger('execution-failed', cmd, res);
           callback(res.status, res);
         }
       };
