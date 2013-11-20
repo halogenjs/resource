@@ -5,9 +5,10 @@
   "version": "0.0.1",
   "keywords": [],
   "dependencies": {
-    "green-mesa/hyperbone-model": "*",
+    "green-mesa/hyperbone-model": "0.1.2",
     "green-mesa/backbone-events": "*",
-    "visionmedia/superagent" : "*"
+    "visionmedia/superagent" : "*",
+    "components/underscore" : "1.4.4"
   },
   "development": {},
   "license": "MIT",

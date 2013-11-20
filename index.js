@@ -1,96 +1,83 @@
 var request = require('superagent');
-window.Model = require('hyperbone-model').Model;
+var _ = require('underscore');
 
-var HyperboneIO = function( model ){
+module.exports.Model = require('hyperbone-model').Model.extend({
 
-  if (model){
-    this.model = model;
-    this.loaded = true;
-  } else {
-    this.loaded = false;
-  }
-
-  this.modelPrototype = Model;
-
-  return this;
-
-}
-
-HyperboneIO.prototype = {
-
-  initialise : function( uri ){
+  fetch : function( uri ){
 
     var self = this;
 
-    this.uri = uri;
+    if(uri){
 
-    return {
+      this.url(uri);
 
-      withModel : function( modelPrototype ){
+    }
 
-        self.modelPrototype = modelPrototype;
-        return {
-          load : load
-        }
-      },
-      load : load
+    request
+      .get(this.url())
+      .set('Accept', 'application/json')
+      .set('If-None-Match', self.__etag || "")
+      .end(function(res){
 
-    };
+        // for GET we only want a 200
+        if(res.status == 200){
 
-    function load( callback ){
+          if(res.header.etag){
 
-      request
-        .get(self.uri)
-        .set('Accept', 'application/json')
-        .end(function(error, res){
-
-          if (error){
-
-            callback(error, res);
-
-          } else {
-
-            if(!self.model){
-
-              self.model = new self.modelPrototype(res.body);
-              callback.call(self.model, false, refresh, transmitCommand );
-
-            } else {
-
-              var attributes = self.model.parseHypermedia(res.body);
-              self.model.set(attributes);
-              callback.call(self.model, false, refresh, transmitCommand );
-
-            }
+            self.__etag = res.header.etag;
 
           }
 
-        });
+          self.reinit(res.body);
+          self.trigger('sync', self, res);
 
-      return self;
+        } else if(res.status === 304){
 
-    }
+          self.trigger('sync', self, res);
 
-    function transmitCommand( id ){
-      var cmd = this.model.command(id);
-      // serialise properties depending on any known encoding type..
-      // and submit..
-      
-      //request(cmd.get('method'), cmd.get('href'))
-    }
+        }else{
 
-    function refresh( callback ){
+          self.trigger('sync-error', res.status, res);
 
-      load(callback);
+        }
 
-    }
+      });
 
   },
 
-  transmitCommand : function( command ){
+  execute : function( command, callback ){
 
+    var fn;
+    var cmd = this.command(command);
+    var self = this;
+
+    if (_.isFunction(callback)){
+      fn = function(res){
+        if(res.status == 200 || res.status == 201 || res.status == 202){
+          callback(false, res);
+        }else{
+          callback(res.status, res);
+        }
+      };
+    } else {
+      fn = function(res){
+        if(res.status == 200 || res.status == 201 || res.status == 202){
+          self.trigger('executed', cmd);
+          self.fetch();
+        }else{
+          self.trigger('execution-failed', cmd, res);
+
+        }
+      };
+    }
+
+    request(cmd.get('method'), cmd.get('href'))
+      .set('Accept', 'application/json')
+      .type( cmd.get('encoding') === "x-form-www-url-encoding" ? "form" : "json" )
+      .send(cmd.properties().toJSON())
+      .end(function(res){
+        fn(res);   
+      });
   }
 
-};
-
-module.exports.HyperboneIO = HyperboneIO;
+});
