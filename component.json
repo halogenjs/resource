@@ -5,7 +5,7 @@
   "version": "0.0.1",
   "keywords": [],
   "dependencies": {
-    "green-mesa/hyperbone-model": "0.1.2",
+    "green-mesa/hyperbone-model": "0.1.4",
     "green-mesa/backbone-events": "*",
     "visionmedia/superagent" : "*",
     "components/underscore" : "1.4.4"
