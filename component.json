@@ -2,10 +2,10 @@
   "name": "hyperbone-model-with-io",
   "repo": "green-mesa/hyperbone-model-with-io",
   "description": "HTTP Interactions for Hyperbone Models",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "keywords": [],
   "dependencies": {
-    "green-mesa/hyperbone-model": "0.1.6",
+    "green-mesa/hyperbone-model": "0.1.8",
     "green-mesa/backbone-events": "*",
     "visionmedia/superagent" : "*",
     "components/underscore" : "1.4.4"
