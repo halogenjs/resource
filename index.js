@@ -7,11 +7,7 @@ module.exports.Model = require('hyperbone-model').Model.extend({
 
     var self = this;
 
-    if(uri){
-
-      this.url(uri);
-
-    }
+    if(uri) this.url(uri);
 
     request
       .get(this.url())
@@ -21,24 +17,15 @@ module.exports.Model = require('hyperbone-model').Model.extend({
 
         // for GET we only want a 200
         if(res.status == 200){
-
           if(res.header.etag){
-
             self.__etag = res.header.etag;
-
           }
-
           self.reinit(res.body);
           self.trigger('sync', self, res);
-
         } else if(res.status === 304){
-
           self.trigger('sync', self, res);
-
         }else{
-
           self.trigger('sync-error', res.status, res);
-
         }
 
       });
@@ -78,7 +65,7 @@ module.exports.Model = require('hyperbone-model').Model.extend({
       .type( cmd.get('encoding') === "x-form-www-url-encoding" ? "form" : "json" )
       .send(cmd.properties().toJSON())
       .end(function(res){
-        fn(res);   
+        fn(res);
       });
   }
 
