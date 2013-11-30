@@ -54,19 +54,68 @@ module.exports.Model = require('hyperbone-model').Model.extend({
           self.trigger('executed', cmd);
           self.fetch();
         }else{
-          self.trigger('execution-failed', cmd, res);
+          self.trigger('execution-failed', res.status, cmd, res);
 
         }
       };
     }
 
-    request(cmd.get('method'), cmd.get('href'))
-      .set('Accept', 'application/json')
-      .type( cmd.get('encoding') === "x-form-www-url-encoding" ? "form" : "json" )
-      .send(cmd.properties().toJSON())
-      .end(function(res){
-        fn(res);
+    if(cmd._files){
+
+      var formData = new FormData();
+      var xhr = new XMLHttpRequest();
+
+      var data = cmd.properties().toJSON();
+
+      _.each(data, function(value, key){
+
+        if (cmd._files[key]){
+
+          formData.append(key, cmd._files[key]);
+
+        } else {
+
+          formData.append(key, value);
+
+        }
+
       });
+
+      xhr.upload.addEventListener("progress", function( event ){
+
+        if (event.lengthComputable){
+          self.trigger('progress', cmd, event.loaded, event.total);
+        }
+
+      }, false);
+
+      xhr.open("POST", cmd.get('href'));
+      xhr.addEventListener("readystatechange", function( event ){
+
+        if(xhr.readyState === 4){
+            fn(xhr);
+        }
+
+      }, false);
+
+      xhr.setRequestHeader("Accept", "application/json");
+      xhr.send( formData );
+
+    } else {
+
+      var encoding = 'json';
+
+      if(cmd.get('encoding') && cmd.get('encoding').indexOf('x-www-form-urlencoded')) encoding = 'form';
+
+      request(cmd.get('method') || "GET", cmd.get('href'))
+        .set('Accept', 'application/json')
+        .type( encoding )
+        .send( cmd.properties().toJSON() )
+        .end(function(res){
+          fn(res);
+        });
+
+    }
   }
 
 });

@@ -138,7 +138,7 @@ describe("suite", function(){
 					"post-test": {
 						method : 'POST',
 						href : "/resource-with-post-endpoint",
-						encoding : "x-form-www-url-encoding",
+						encoding : "x-www-form-urlencoded",
 						properties : {
 							name : "Test",
 							test : [
@@ -160,7 +160,7 @@ describe("suite", function(){
 					expect(res.status).to.equal(201);
 					expect(res.header.location).to.equal('/new-resource.json');
 					expect(res.body.name).to.equal('Test');
-					expect(res.body.test).to.equal('a,b'); 
+					expect(res.body.test).to.deep.equal(['a', 'b']); 
 					done();
 
 				});
