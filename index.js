@@ -37,6 +37,9 @@ module.exports.Model = require('hyperbone-model').Model.extend({
     var fn;
     var cmd = this.command(command);
     var self = this;
+    var formData;
+    var xhr;
+    var encoding = "json";
 
     if (_.isFunction(callback)){
       fn = function(res){
@@ -60,26 +63,13 @@ module.exports.Model = require('hyperbone-model').Model.extend({
       };
     }
 
-    if(cmd._files){
+    if(cmd.get('encoding') && cmd.get('encoding').indexOf('x-www-form-urlencoded')) encoding = 'form';
 
-      var formData = new FormData();
-      var xhr = new XMLHttpRequest();
+    if(cmd._files || encoding === 'form'){
+
+      xhr = new XMLHttpRequest();
 
       var data = cmd.properties().toJSON();
-
-      _.each(data, function(value, key){
-
-        if (cmd._files[key]){
-
-          formData.append(key, cmd._files[key]);
-
-        } else {
-
-          formData.append(key, value);
-
-        }
-
-      });
 
       xhr.upload.addEventListener("progress", function( event ){
 
@@ -89,7 +79,6 @@ module.exports.Model = require('hyperbone-model').Model.extend({
 
       }, false);
 
-      xhr.open("POST", cmd.get('href'));
       xhr.addEventListener("readystatechange", function( event ){
 
         if(xhr.readyState === 4){
@@ -98,15 +87,54 @@ module.exports.Model = require('hyperbone-model').Model.extend({
 
       }, false);
 
+      xhr.open("POST", cmd.get('href'));
+
       xhr.setRequestHeader("Accept", "application/json");
-      xhr.send( formData );
+
+
+      if(cmd._files){
+
+        formData = new FormData();
+
+        _.each(data, function(value, key){
+
+          if (cmd._files[key]){
+
+            formData.append(key, cmd._files[key]);
+
+          } else {
+
+            formData.append(key, value);
+
+          }
+
+        });
+
+        xhr.setRequestHeader("Content-Type", 'multipart/form-data');
+        xhr.send( formData );
+
+      } else {
+
+        var segments = [];
+
+        _.each(data, function (value, key){
+          if (_.isArray(value)){
+            _.each(value, function (value){
+              segments.push(key + "=" + value);
+            });
+          } else {
+            segments.push(key + '=' + value);
+          }
+        });
+
+        xhr.setRequestHeader("Content-Type", 'application/x-www-form-urlencoded');
+        xhr.send( segments.join('&'));
+
+      }
 
     } else {
 
-      var encoding = 'json';
-
-      if(cmd.get('encoding') && cmd.get('encoding').indexOf('x-www-form-urlencoded')) encoding = 'form';
-
+      // send json...
       request(cmd.get('method') || "GET", cmd.get('href'))
         .set('Accept', 'application/json')
         .type( encoding )
@@ -115,7 +143,7 @@ module.exports.Model = require('hyperbone-model').Model.extend({
           fn(res);
         });
 
-    }
+      }
   }
 
 });
