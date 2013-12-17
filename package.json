@@ -1,6 +1,6 @@
 {
   "name": "hyperbone-model-with-io",
-  "version": "0.1.6",
+  "version": "0.1.8",
   "description": "HTTP interactions for Hyperbone Models",
   "main": "index.js",
   "scripts": {

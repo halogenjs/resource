@@ -43,17 +43,17 @@ module.exports.Model = require('hyperbone-model').Model.extend({
 
     if (_.isFunction(callback)){
       fn = function(res){
-        if(res.status == 200 || res.status == 201 || res.status == 202){
+        if(res.status >= 200 && res.status < 300){
           self.trigger('executed', cmd);
           callback(false, res);
         }else{
-          self.trigger('execution-failed', cmd, res);
+          self.trigger('execution-failed', res.status, cmd, res);
           callback(res.status, res);
         }
       };
     } else {
       fn = function(res){
-        if(res.status == 200 || res.status == 201 || res.status == 202){
+        if(res.status >= 200 && res.status < 300){
           self.trigger('executed', cmd);
           self.fetch();
         }else{
@@ -82,19 +82,16 @@ module.exports.Model = require('hyperbone-model').Model.extend({
       xhr.addEventListener("readystatechange", function( event ){
 
         if(xhr.readyState === 4){
+            xhr.body = JSON.parse(xhr.responseText || '{}');
             fn(xhr);
         }
 
       }, false);
 
-      xhr.open("POST", cmd.get('href'));
-
-      xhr.setRequestHeader("Accept", "application/json");
-
-
       if(cmd._files){
 
         formData = new FormData();
+        xhr.open("POST", cmd.get('href'));
 
         _.each(data, function(value, key){
 
@@ -110,23 +107,27 @@ module.exports.Model = require('hyperbone-model').Model.extend({
 
         });
 
-        xhr.setRequestHeader("Content-Type", 'multipart/form-data');
+        xhr.setRequestHeader("Accept", 'application/json');
         xhr.send( formData );
 
       } else {
 
         var segments = [];
+         xhr.open(cmd.get('method'), cmd.get('href'));
 
         _.each(data, function (value, key){
           if (_.isArray(value)){
             _.each(value, function (value){
-              segments.push(key + "=" + value);
+              if(value || value === 0 || value === ""){
+                segments.push(key + "=" + encodeURI(value));
+              }
             });
-          } else {
-            segments.push(key + '=' + value);
+          } else if(value || value === 0 || value === ""){
+            segments.push(key + '=' + encodeURI(value));
           }
         });
 
+        xhr.setRequestHeader("Accept", 'application/json');
         xhr.setRequestHeader("Content-Type", 'application/x-www-form-urlencoded');
         xhr.send( segments.join('&'));
 
