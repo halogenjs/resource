@@ -65,11 +65,27 @@ module.exports.Model = require('hyperbone-model').Model.extend({
 
     if(cmd.get('encoding') && cmd.get('encoding').indexOf('x-www-form-urlencoded')) encoding = 'form';
 
+    var data = cmd.properties().toJSON();
+
+    if(cmd.get('schema')){
+
+      _.each(data, function(value, key){
+
+        if(value === true && cmd.get('schema.' + key + '.type') === 'html-checkbox' && cmd.get('schema.' + key + '.value')){
+
+          data[key] = cmd.get('schema.' + key + '.value');
+
+        }
+
+      });
+
+    }
+
+
+
     if(cmd._files || encoding === 'form'){
 
       xhr = new XMLHttpRequest();
-
-      var data = cmd.properties().toJSON();
 
       xhr.upload.addEventListener("progress", function( event ){
 
@@ -101,7 +117,7 @@ module.exports.Model = require('hyperbone-model').Model.extend({
 
           } else {
 
-            formData.append(key, value);
+              formData.append(key, value);
 
           }
 
@@ -123,7 +139,7 @@ module.exports.Model = require('hyperbone-model').Model.extend({
               }
             });
           } else if(value || value === 0 || value === ""){
-            segments.push(key + '=' + encodeURI(value));
+              segments.push(key + '=' + encodeURI(value));
           }
         });
 
@@ -139,7 +155,7 @@ module.exports.Model = require('hyperbone-model').Model.extend({
       request(cmd.get('method') || "GET", cmd.get('href'))
         .set('Accept', 'application/json')
         .type( encoding )
-        .send( cmd.properties().toJSON() )
+        .send( data )
         .end(function(res){
           fn(res);
         });

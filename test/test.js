@@ -243,6 +243,55 @@ describe("suite", function(){
 
 		});
 
+		it("can deal with html-checkbox types, exhibiting correct behaviour", function( done ){
+
+			var model = new Model({
+
+				name : "The resource name",
+				_commands : {
+					"put-test": {
+						method : 'POST',
+						href : "/resource-with-checkbox-property",
+						properties : {
+							test : true,
+						},
+						schema : {
+							test : {
+								type : "html-checkbox",
+
+								value : "non-default-true-value"
+							}
+						}
+					}
+				}
+
+			}).url('/test-one-second.json');
+
+			model.execute('put-test', function(err, res){
+
+				expect(res.body.test).to.equal("non-default-true-value");
+
+				model.setCommandProperty('put-test.test', false);
+
+				model.execute('put-test', function(err, res){
+
+					expect(res.body.test).to.equal('');
+
+					model.setCommandProperty('put-test.test', false);
+
+					done();
+
+				});
+
+			});
+
+			
+
+
+
+
+		});
+
 	});
 
 });

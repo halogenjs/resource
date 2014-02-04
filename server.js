@@ -82,6 +82,23 @@ server.post('/resource-with-post-endpoint', function(req, res, next){
 
 });
 
+server.post('/resource-with-checkbox-property', function(req, res, next){
+
+	if(req.params.test){
+
+		res.setHeader('Location', '/new-resource.json')
+		res.send(201, { test : req.params.test });
+
+
+	} else {
+
+		res.setHeader('Location', '/new-resource.json')
+		res.send(201, { test : '' });
+
+	}
+
+});
+
 server.put('/put-endpoint', function(req, res, next){
 
 	if(req.params.name && req.params.test){
