@@ -2,7 +2,7 @@
   "name": "hyperbone-model-with-io",
   "repo": "green-mesa/hyperbone-model-with-io",
   "description": "HTTP Interactions for Hyperbone Models",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "keywords": [],
   "dependencies": {
     "green-mesa/hyperbone-model": "*",

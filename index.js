@@ -9,11 +9,15 @@ module.exports.Model = require('hyperbone-model').Model.extend({
 
     if(uri) this.url(uri);
 
-    request
+    var req = request
       .get(this.url())
-      .set('Accept', 'application/json')
-      .set('If-None-Match', self.__etag || "")
-      .end(function(res){
+      .set('Accept', 'application/json');
+
+    if (self.__etag){
+      req.set('If-None-Match', self.__etag);
+    }
+
+    req.end(function(res){
 
         // for GET we only want a 200
         if(res.status == 200){
