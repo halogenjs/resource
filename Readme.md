@@ -6,7 +6,6 @@ It is replaced by [HalogenJS Resource](https://github.com/halogenjs/resource).
 
 [![Build Status](https://travis-ci.org/green-mesa/hyperbone-model-with-io.png?branch=master)](https://travis-ci.org/green-mesa/hyperbone-model-with-io)
 
-
 ## tldr; 
 
 Adds HTTP interactions to Hyperbone Models. Ridiculously early push this.
