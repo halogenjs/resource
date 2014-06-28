@@ -119,5 +119,4 @@ server.get(/.*/, restify.serveStatic({
   directory: './test'
 }));
 
-
-server.listen(3010);
+module.exports = server;

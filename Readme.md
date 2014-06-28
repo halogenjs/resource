@@ -1,5 +1,9 @@
 # Hyperbone Model (With IO)
 
+## This module is no longer being maintained
+
+It is replaced by [HalogenJS Resource](https://github.com/halogenjs/resource). 
+
 [![Build Status](https://travis-ci.org/green-mesa/hyperbone-model-with-io.png?branch=master)](https://travis-ci.org/green-mesa/hyperbone-model-with-io)
 
 
@@ -13,9 +17,26 @@ Adds a 'fetch' method for loading a Hypermedia resource from a server, and a 'ex
 
 ## Installation
 
-  Install with [component(1)](http://component.io):
+Install with [npm(1)](http://npmjs.org):
 
-    $ component install green-mesa/hyperbone-model-with-io
+```sh
+$ npm install --save hyperbone-model-with-io
+```
+
+## Tests
+
+If you don't already have grunt..
+```sh
+$ npm install -g grunt-cli
+```
+After cloning the repo..
+```sh
+$ npm install
+```
+To run the tests
+```sh
+$ npm test
+```
 
 
 ## Usage
@@ -58,19 +79,6 @@ It will also trigger `executed` or `execution-failed`, which is passed the comma
 
 And this gives you Hyperbone Models with the HTTP extensions. This module is badly named really. This should bubble up to the parent model.
 
-## Testing
-
-Running the tests manually:
-
-```js
-node server.js
-```
-
-Then navigate to [localhost:3010/testrunner.html](http://localhost:3010/testrunner.html)
-
-Using Grunt:
-
-Have not quite set up the Gruntfile to do this yet.
 
 ## License
 

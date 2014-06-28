@@ -1,12 +1,7 @@
-// two primary use cases:
-
-// 1 - Load data from a server
-// 2 - Add command submit support to existing models
-
-// Questions:
-
-// should commands be automatically intercepted? 
-
+var ioModel = require('../index.js');
+var chai = require('chai');
+var expect = chai.expect;
+var should = chai.should();
 
 describe("suite", function(){
 
@@ -14,10 +9,8 @@ describe("suite", function(){
 
 		it("Environment", function(){
 
-			should.exist(dom);
-			should.exist(Model);
-			should.exist(require('hyperbone-model-with-io'));
-			should.exist(require('hyperbone-model-with-io').Model);
+			should.exist(ioModel);
+			should.exist(ioModel.Model);
 
 		});
 
@@ -25,7 +18,7 @@ describe("suite", function(){
 
 	describe("Loading Hypermedia", function(){
 
-		var Model = require('hyperbone-model-with-io').Model;
+		var Model = ioModel.Model;
 
 		it("Can load a hypermedia object from a remote service", function( done ){
 
@@ -128,7 +121,7 @@ describe("suite", function(){
 
 	describe("executing commands", function(){
 
-		var Model = require('hyperbone-model-with-io').Model;
+		var Model = ioModel.Model;
 
 		it("Can execute a POST command with form encoding with a callback", function( done ){
 
@@ -284,11 +277,6 @@ describe("suite", function(){
 				});
 
 			});
-
-			
-
-
-
 
 		});
 
