@@ -1,25 +1,21 @@
-# Hyperbone Model (With IO)
+# Halogen Resource
 
-## This module is no longer being maintained
-
-It is replaced by [HalogenJS Resource](https://github.com/halogenjs/resource). 
-
-[![Build Status](https://travis-ci.org/green-mesa/hyperbone-model-with-io.png?branch=master)](https://travis-ci.org/green-mesa/hyperbone-model-with-io)
+[![Build Status](https://travis-ci.org/halogen-js/resource.png?branch=master)](https://travis-ci.org/halogen-js/resource)
 
 ## tldr; 
 
-Adds HTTP interactions to Hyperbone Models. Ridiculously early push this.
+Adds AJAX HTTP interactions to Halogen Models.
 
 ## Intro
 
-Adds a 'fetch' method for loading a Hypermedia resource from a server, and a 'execute' method for sending Command data to a server. 
+Adds a 'fetch' method for loading a Hypermedia resource from a server, and a 'execute' method for serialising and sending Command data to a server. 
 
 ## Installation
 
 Install with [npm(1)](http://npmjs.org):
 
 ```sh
-$ npm install --save hyperbone-model-with-io
+$ npm install --save halogen-resource
 ```
 
 ## Tests
@@ -37,19 +33,22 @@ To run the tests
 $ npm test
 ```
 
-
 ## Usage
 
 Instead of ...
 
 ```js
-var Model = require('hyperbone-model').Model;
+var Model = require('halogen-model').Model;
 ```
 
 do...
 
 ```js
-var Model = require('hyperbone-model-with-io').Model;
+var Model = require('halogen-resource').Resource;
+
+// or if you prefer to keep them cleanly separate.. 
+
+var Resource = require('halogen-resource').Resource;
 ```
 
 ## API
@@ -76,7 +75,7 @@ The parameters passed to the callback are `err` and `response`. 201, 200 and 202
 
 It will also trigger `executed` or `execution-failed`, which is passed the command that failed.
 
-And this gives you Hyperbone Models with the HTTP extensions. This module is badly named really. This should bubble up to the parent model.
+And this gives you Halogen Models with the HTTP extensions. This module is badly named really. This should bubble up to the parent model.
 
 
 ## License

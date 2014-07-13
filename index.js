@@ -1,7 +1,7 @@
 var request = require('superagent');
 var _ = require('underscore');
 
-module.exports.Model = require('hyperbone-model').Model.extend({
+module.exports.Resource = require('halogen-model').Model.extend({
 
   fetch : function( uri ){
 

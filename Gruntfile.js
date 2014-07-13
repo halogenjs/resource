@@ -1,6 +1,6 @@
 'use strict';
 
-var serverRootUri = 'http://127.0.0.1:8080';
+var serverRootUri = 'http://127.0.0.1:3010';
 var mochaPhantomJsTestRunner = serverRootUri + '/testrunner.html';
 
 /* jshint -W106 */
@@ -56,7 +56,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.registerTask('server', 'Run server side dummy', function(){
     grunt.log.writeln('Starting web server on port 3010.');
-      require('./server.js').listen(8080);
+      require('./server.js').listen(3010);
 	})
   grunt.registerTask('test', ['jshint', 'browserify', 'server', 'mocha_phantomjs']);
 }

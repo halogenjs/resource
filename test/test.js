@@ -10,7 +10,7 @@ describe("suite", function(){
 		it("Environment", function(){
 
 			should.exist(ioModel);
-			should.exist(ioModel.Model);
+			should.exist(ioModel.Resource);
 
 		});
 
@@ -18,7 +18,7 @@ describe("suite", function(){
 
 	describe("Loading Hypermedia", function(){
 
-		var Model = ioModel.Model;
+		var Model = ioModel.Resource;
 
 		it("Can load a hypermedia object from a remote service", function( done ){
 
@@ -121,7 +121,7 @@ describe("suite", function(){
 
 	describe("executing commands", function(){
 
-		var Model = ioModel.Model;
+		var Model = ioModel.Resource;
 
 		it("Can execute a POST command with form encoding with a callback", function( done ){
 
