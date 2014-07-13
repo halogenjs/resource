@@ -1,6 +1,6 @@
 # Halogen Resource
 
-[![Build Status](https://travis-ci.org/halogen-js/resource.png?branch=master)](https://travis-ci.org/halogen-js/resource)
+[![Build Status](https://travis-ci.org/halogenjs/resource.png?branch=master)](https://travis-ci.org/halogenjs/resource)
 
 ## tldr; 
 
